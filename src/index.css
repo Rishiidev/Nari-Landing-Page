@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  
+  --color-nari-bg: #F7F5F2;
+  --color-nari-surface: #FFFFFF;
+  --color-nari-primary: #C05C4F;
+  --color-nari-primary-hover: #A84A3E;
+  --color-nari-text: #3D2B28;
+  --color-nari-text-muted: #8A7A77;
+  --color-nari-border: #E8E3DD;
+}
+
+body {
+  background-color: var(--color-nari-bg);
+  color: var(--color-nari-text);
+}
