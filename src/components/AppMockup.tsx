@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Calendar } from 'lucide-react';
+import { Calendar, Share, Check } from 'lucide-react';
 
 export default function AppMockup() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const [copied, setCopied] = useState(false);
   
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
@@ -27,6 +28,39 @@ export default function AppMockup() {
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
+  };
+
+  const fallbackCopy = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const shareData = {
+      title: 'Nari',
+      text: 'Check out Nari - A privacy-first, local-only period tracker.',
+      url: 'https://nariself.vercel.app/',
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          fallbackCopy(shareData.url);
+        }
+      }
+    } else {
+      fallbackCopy(shareData.url);
+    }
   };
 
   return (
@@ -60,8 +94,18 @@ export default function AppMockup() {
               <h2 className="font-serif text-2xl sm:text-3xl text-stone-800 dark:text-white tracking-tight">Nari</h2>
               <p className="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium mt-1">Nothing logged today</p>
             </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-stone-800 flex items-center justify-center shadow-sm text-nari-primary border border-stone-100 dark:border-stone-700">
-              <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <div className="flex space-x-2">
+              <button 
+                onClick={handleShare}
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-stone-800 flex items-center justify-center shadow-sm text-stone-500 hover:text-nari-primary border border-stone-100 dark:border-stone-700 transition-colors focus:outline-none focus:ring-2 focus:ring-nari-primary/50"
+                aria-label="Share Nari"
+                title="Share Nari"
+              >
+                {copied ? <Check size={16} className="sm:w-[18px] sm:h-[18px] text-green-500" /> : <Share size={16} className="sm:w-[18px] sm:h-[18px]" />}
+              </button>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-stone-800 flex items-center justify-center shadow-sm text-nari-primary border border-stone-100 dark:border-stone-700">
+                <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
+              </div>
             </div>
           </div>
 
